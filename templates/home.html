@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Name Splitter - Home</title>
+</head>
+<body>
+
+    <!-- Label text requested -->
+    <h3>what is your name</h3>
+    
+    <!-- Form pointing to our second screen (/show-name) -->
+    <form action="/show-name" method="POST">
+        <!-- Text field to take a string -->
+        <input type="text" name="full_name_input" placeholder="e.g. John Smith" required>
+        <br><br>
+        <!-- Button below it opens the new page -->
+        <button type="submit">Split and Open Page</button>
+    </form>
+
+</body>
+</html>
