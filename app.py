@@ -1,62 +1,48 @@
-import plexapi.myplex
-import keyring
+import logging
 from flask import Flask, render_template, request
-# Import the service function from your services.py file
 from services.services import split_user_name
-from services.api.openLibraryConnector import getBookDetails 
+from services.api.dataSources.openLibraryConnector import getBookDetails 
+from services.api.plex.plexConnector import plexAuth, listServers
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    handlers=[logging.StreamHandler()]
+)
 
 app = Flask(__name__)
+app.logger.info("Starting Plex/Flask Application...")
 
-# check keyring for token
-token = keyring.get_password("plex_app", "my_token")
-if (token):
-    print ("Locally stored token found")
-    account = plexapi.myplex.MyPlexAccount(token=token)
-    plex = account.resource('Vijflix').connect() 
-    if(plex):
-        print(f"Successfully connected to: {plex.friendlyName}")
-        for section in plex.library.sections():
-            print(f"Library Name: {section.title} | Type: {section.type} | ID: {section.key}")
-    else:
-        keyring.delete_password("plex_app", "my_token")
-else:
-# intialise plex connection
-    try:
-        pinlogin = plexapi.myplex.MyPlexPinLogin(oauth=True)
-        pinlogin.run()
-        print(f'Login to Plex at the following url:\n{pinlogin.oauthUrl()}')
-        pinlogin.waitForLogin()
-        token = pinlogin.token
-        keyring.set_password("plex_app", "my_token", token)
-        account = plexapi.myplex.MyPlexAccount(token=token)
-        plex = account.resource('Vijflix').connect() 
-        print(f"Successfully connected to: {plex.friendlyName}")
-        for section in plex.library.sections():
-            print(f"Library Name: {section.title} | Type: {section.type} | ID: {section.key}")
-
-    except Exception as e:
-        print(f"Failed to connect to Plex: {e}")
-        keyring.delete_password("plex_app", "my_token")
-        plex = None
-
+try:
+    plex_account = plexAuth()
+    plex_server = plex_account.resource('Vijflix').connect()
+    app.logger.info(f"Successfully connected")
+    app.config['PLEX_SERVER'] = listServers(plex_account)
+    
+except Exception as e:
+    app.logger.error(f"Failed to connect to Plex: {e}")
+    app.config['PLEX_SERVER'] = None
 
 @app.route("/")
 def home():
+    plex_account = plexAuth()
+    app.config['PLEX_ACCOUNT'] = plex_account
     return render_template("home.html")
 
-@app.route("/show-name", methods=["POST"])
-def show_name():
-    # 1. Grab raw data from the web form submission
-    raw_input = request.form.get("full_name_input", "")
+@app.route("/select_server", methods=["POST"])
+def select_server():
+    resource_name = request.form.get("resource_name")
+    account = plexAuth()
+    resouce = account.resource(resource_name).connect()
+    app.config['RESOURCE'] = resouce
+    app.config['RESOURCE_NAME'] = resource_name
+    app.logger.info(f"User selected and connected to: {resource_name}")
     
-    # 2. Call the imported service function at the appropriate time
-    first, second = split_user_name(raw_input)
-    data = getBookDetails (raw_input)
+    return redirect(url_for('dashboard'))
 
-    
-    # 3. Pass the clean result variables directly to your HTML view
-    return render_template("display.html", first_name=first, second_name=second, book_data= data)
-
+@app.route("/dashboard")
+def dashboard():
+    server_name = session.get('selected_server')
+    return f"You are currently connected to {server_name}"
 if __name__ == "__main__":
     app.run(debug=True)

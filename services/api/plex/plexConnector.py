@@ -1,22 +1,51 @@
 import plexapi.myplex
+import logging
+import time
 import keyring
+from keyring.errors import NoKeyringError
+from plexapi.exceptions import Unauthorized, BadRequest, PlexApiException
 
-import requests
 
-def plexAuth():
-    token = keyring.get_password("plex_app", "my_token")
-    if (token):
-        message = ("Locally stored token found")
-        account = plexapi.myplex.MyPlexAccount(token=token)
-        if (account):
-            return [account, message]
+logger = logging.getLogger(__name__)
+
+def plexAuth(retry_count = 0):
+    try:
+        token = keyring.get_password("plex_app", "my_token")
+        if (token):
+            try:
+                message = "Locally stored token found"
+                account = plexapi.myplex.MyPlexAccount(token=token)
+                logger.info(message)
+                return [account]
+            except Unauthorized:
+                keyring.delete_password("plex_app", "my_token")
+                message = "Expired token re-trying"
+                logger.warning(message)
+                return [plexPinAuth()]
+            except BadRequest as e:
+                if retry_count < 2:
+                    retry_count += 1
+                    message = f"[STATUS] Warning: Posible transient error. Retry {retry_count}/2 in 3 seconds..."
+                    logger.warning(message)
+                    time.sleep(3)
+                    return plexAuth(retry_count=retry_count)
+                else:
+                    logger.error("Max retries reached. Failing.")
+                    raise e
+            
+            except PlexApiException as e:
+                logger.error(f"Exception Type: {type(e)}")
+                logger.error(f"Has response? {hasattr(e, 'response')}")
+                if hasattr(e, 'response'):
+                    logger.error(f"Response Body: {e.response.text}")
+            raise e
+
+
         else:
-            keyring.delete_password("plex_app", "my_token")
-            message = ("Expired token created")
+            message = ("New token created")
             return [plexPinAuth(),message]
-    else:
-        message = ("New token created")
-        return [plexPinAuth(),message]
+    except NoKeyringError:
+        print("Warning: Secure keyring not supported on this machine. Falling back to environment variables.")
 
 def plexPinAuth():
     try:
