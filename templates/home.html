@@ -1,22 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Plex server connection</title>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/app.css') }}"
+    />
+  </head>
+  <body class = "appBody">
+    <h3>Select a Server</h3>
 
-    <!-- Label text requested -->
-    <h3>what is your name</h3>
-    
-    <!-- Form pointing to our second screen (/show-name) -->
-    <form action="/show-name" method="POST">
-        <!-- Text field to take a string -->
-        <input type="text" name="full_name_input" placeholder="e.g. John Smith" required>
-        <br><br>
-        <!-- Button below it opens the new page -->
-        <button type="submit">Split and Open Page</button>
+    <form id="server-form" action="/select_server" method="POST">
+      <input type="hidden" name="resource_name" id="selected-server" />
+      <div class="container">
+        {% for resource in resources %}
+        <div class="button" onclick="selectServer('{{ resource.name }}')">
+          <h4>{{ resource.name }}</h4>
+        </div>
+        {% endfor %}
+      </div>
     </form>
 
-</body>
+    <script>
+      function selectServer(name) {
+        document.getElementById("selected-server").value = name;
+        document.getElementById("server-form").submit();
+      }
+    </script>
+  </body>
 </html>

@@ -1,0 +1,147 @@
+:root {
+  --primary-color: #4285f4;
+  --text-primary: #3c4043;
+  --bg-color: #fff;
+  --surface-hover: #f6f9fe;
+  --shadow-default: rgba(60, 64, 67, 0.3) 0 1px 3px 0, rgba(60, 64, 67, 0.15) 0 4px 8px 3px;
+  --shadow-elevation: rgba(0, 0, 0, 0.2) 0 3px 5px -1px, rgba(0, 0, 0, 0.14) 0 6px 10px 0, rgba(0, 0, 0, 0.12) 0 1px 18px 0;
+  --font-main: "Google Sans", Roboto, Arial, sans-serif;
+  --radius: 24px;
+}
+
+/* ____________________________Shared decorators abd components like Containers and Buttons___________________*/
+.appBody{
+  display: grid;
+  gap: 20px;
+}
+.container{
+  background-color: var(--bg-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-default);
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 20px;
+}
+
+.container:hover {
+  box-shadow: rgba(60, 64, 67, 0.3) 0 2px 3px 0, rgba(60, 64, 67, 0.15) 0 6px 10px 4px;
+  transition: box-shadow 280ms ease-in-out;
+}
+
+
+.button {
+  align-items: center;
+  appearance: none;
+  background-color: #fff;
+  border-radius: 24px;
+  border-style: none;
+  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+  box-sizing: border-box;
+  color: #3c4043;
+  cursor: pointer;
+  display: inline-flex;
+  fill: currentcolor;
+  font-family: "Google Sans",Roboto,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: .25px;
+  line-height: normal;
+  max-width: 100%;
+  overflow: visible;
+  padding: 2px 24px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: auto;
+  will-change: transform,opacity;
+  z-index: 0;
+}
+
+.button:hover {
+  background: #F6F9FE;
+  color: #174ea6;
+}
+
+.button:active {
+  box-shadow: 0 4px 4px 0 rgb(60 64 67 / 30%), 0 8px 12px 6px rgb(60 64 67 / 15%);
+  outline: none;
+}
+
+.button:focus {
+  outline: none;
+  border: 2px solid #4285f4;
+}
+
+.button:not(:disabled) {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+.button:not(:disabled):hover {
+  box-shadow: rgba(60, 64, 67, .3) 0 2px 3px 0, rgba(60, 64, 67, .15) 0 6px 10px 4px;
+}
+
+.button:not(:disabled):focus {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+.button:not(:disabled):active {
+  box-shadow: rgba(60, 64, 67, .3) 0 4px 4px 0, rgba(60, 64, 67, .15) 0 8px 12px 6px;
+}
+
+.button:disabled {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+
+/* ____________________________Books ___________________*/
+
+.tile-button {
+  /* Your original styles */
+  background-color: var(--bg-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-default);
+  padding: 24px;
+  box-sizing: border-box;
+
+ 
+  border: none;             
+  text-align: left;         
+  font-family: inherit;     /* Forces the button to use your page's font */
+  color: inherit;           /* Inherits text color from the body */
+  cursor: pointer;          /* Shows the pointer finger icon on hover */
+  width: 100%;              /* Ensures it expands to fill its grid space */
+  display: block;           /* Makes the button a block wrapper */
+}
+
+.tile-button:hover,
+.tile-button:focus-visible {  /* Focus-visible adds styling for keyboard 'Tab' users */
+  box-shadow: rgba(60, 64, 67, 0.3) 0 2px 3px 0, rgba(60, 64, 67, 0.15) 0 6px 10px 4px;
+  outline: 2px solid #0066cc; /* Good practice: clearly shows keyboard focus */
+}
+
+/* Smooth transition for both hover AND leaving hover states */
+.tile-button {
+  transition: box-shadow 280ms ease-in-out, outline 100ms ease;
+}
+
+/* NEW: Force internal spans to behave like divs */
+.tile-title {
+  display: block;
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.tile-description {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 1.5;
+}

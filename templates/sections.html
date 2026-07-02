@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Plex server connection</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/app.css') }}"
+    />
+  </head>
+  <body class="appBody">
+    <h3>Select the audiobook library</h3>
+    <form
+      class="appBody"
+      action="/select_section"
+      id="library-form"
+      method="POST"
+    >
+      <input type="hidden" name="selected-library" id="selected-library" />
+      <div class="container">
+        <b> Your plex libraries that are probably audiobooks:</b>
+        {% for section in sections %} {# Filter: only show if title contains
+        'book' OR type is 'artist' #} {% if 'book' in section.title | lower or
+        section.type == 'artist' %}
+        <button
+          class="tile-button"
+          type="submit"
+          name="section_key"
+          value="{{ section.key }}"
+          onclick="selectLibrary('{{ section.title }}')"
+        >
+          <span class="tile-title"> {{ section.title }} </span>
+          <span class="tile-description"> Type: {{ section.type }} </span>
+        </button>
+        {% endif %} {% endfor %}
+      </div>
+      <div class="container">
+        <b> All of the libraries on the server</b>
+        {% for section in sections %}
+        <button
+          class="tile-button"
+          type="submit"
+          name="section_key"
+          value="{{ section.key }}"
+        >
+          <span class="tile-title"> {{ section.title }} </span>
+          <span class="tile-description"> Type: {{ section.type }} </span>
+        </button>
+        {% endfor %}
+      </div>
+    </form>
+
+    <script>
+      function selectLibrary(name) {
+        document.getElementById("selected-library").value = name;
+        document.getElementById("library-form").submit();
+      }
+    </script>
+  </body>
+</html>

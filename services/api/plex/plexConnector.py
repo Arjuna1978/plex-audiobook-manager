@@ -4,9 +4,10 @@ import time
 import keyring
 from keyring.errors import NoKeyringError
 from plexapi.exceptions import Unauthorized, BadRequest, PlexApiException
-
+from plexapi.myplex import MyPlexAccount
 
 logger = logging.getLogger(__name__)
+
 
 def plexAuth(retry_count = 0):
     try:
@@ -16,12 +17,12 @@ def plexAuth(retry_count = 0):
                 message = "Locally stored token found"
                 account = plexapi.myplex.MyPlexAccount(token=token)
                 logger.info(message)
-                return [account]
+                return account
             except Unauthorized:
                 keyring.delete_password("plex_app", "my_token")
                 message = "Expired token re-trying"
                 logger.warning(message)
-                return [plexPinAuth()]
+                return plexPinAuth()
             except BadRequest as e:
                 if retry_count < 2:
                     retry_count += 1
@@ -42,8 +43,8 @@ def plexAuth(retry_count = 0):
 
 
         else:
-            message = ("New token created")
-            return [plexPinAuth(),message]
+            logger.info("New token created")
+            return plexPinAuth()
     except NoKeyringError:
         print("Warning: Secure keyring not supported on this machine. Falling back to environment variables.")
 
@@ -62,5 +63,18 @@ def plexPinAuth():
         print(f"Failed to connect to Plex: {e}")
         keyring.delete_password("plex_app", "my_token")
     
-def listServers (account_name: str):
-    return [r for r in account_name.resources() if r.product == 'Plex Media Server']
+def listServers (account: MyPlexAccount):
+    return [r for r in account.resources() if r.product == 'Plex Media Server']
+
+def connectServer(server:str, account: MyPlexAccount):
+    plex = account.resource(server).connect()
+    sections = plex.library.sections()
+    sections_data = [
+        {"key": s.key, "title": s.title, "type": s.type} 
+        for s in sections
+    ]
+    for section in sections_data:
+        db.save_library(section)
+    return plex, sections_data
+
+
