@@ -33,78 +33,82 @@ erDiagram
     %% Entities
     USERS {
         string user_id PK
-        string name
-        int light_mode
-        string servers
-        string file_id FK
+        string name "Name of user"
+        bool light_mode "light is default and true"
+        string prefered_server "last server selected"
+        string file_id FK "image for avatar"
     }
     SERVER {
         string server_id PK
-        string title
-        string notes
+        string plex_id 
+        string name "human readable name"
+        string notes "any notes about this server"
     }
     LIBRARIES {
         string library_id PK
-        string name
-        string type
-        string server
-        string path
+        string plex_id "called section id in plex"
+        string name "human readable name"
+        string type "plex types are | movie | show | artist (audio)|"
+        string path "allows for local link"
         string file_id FK
     }
     CONTRIBUTORS {
         string contributor_id PK
-        string asin_id
-        string asin_txt
-        string name
-        string type
-        string description
-        string links
+        string plex_id FK
+        string asin_id FK
+        string asin_txt "human readable name as per ASIN"
+        string name "human readable name"
+        string type "app specific types are | author | narator | producer|"
+        string description "long form dscription"
     }
     CANNON {
         string cannon_id PK
-        string title
-        string notes
+        string title "human readable name"
+        string description "long form dscription"
     }
     SERIES {
         string series_id PK
         string cannon_id FK
         string title
-        string notes
+        string description "long form dscription"
     }
     BOOKS {
         string book_id PK
         string series_id FK
         string cannon_id FK
-        string asin_id
+        string plex_id FK
+        string asin_id FK
         string asin_txt
-        string isbn_id
+        string isbn_id FK
         string library_id FK
-        string title
-        string duration
-        string summary
-        int in_library
-        int has_read
-        int have_listened
-        int publish_year
-        string tags
+        string title "human readable name"
+        string duration "in ms"
+        string duration_played "in ms"
+        string description "long form dscription"
+        bool in_library "allows for book information not in library"
+        bool has_started "set to true if user has started listening"
+        bool has_finished "set to true if user has finished"
+        int publish_year "YYYY"
     }
     CHAPTERS {
         int chapter_id PK
         string book_id FK
-        string title
-        string chapter_index_txt
-        int chapter_index_number
-        int start_time_offset
-        int end_time_offset
-        int duration
-        int have_listened
+        string plex_id
+        string title "human readable name"
+        string chapter_index_txt "Allowing for chapter numbers that and not just enumerated"
+        int chapter_index_number 
+        int start_time_offset "in ms"
+        int end_time_offset "in ms"
+        int duration "in ms"
+        bool has_started "set to true if user has starte"
+        bool has_finished ""set to true if user has finished"
     }
     GENRES {
         int genre_id PK
-        string genre_name
-        string source_taxonomy
+        string genre_name "server defined human readable text"
+        string source_taxonomy "set to true if user has finished"
         string source_id
-        string source_txt
+        string source_txt "taxonomy defined human readable text"
     }
     TAGS {
         int tag_id PK
@@ -120,7 +124,7 @@ erDiagram
         string container
         string notes
     }
-    
+
     %% Mapping Tables
     BOOK_FILES_MAP {
         int id PK
@@ -162,6 +166,7 @@ erDiagram
         int id PK
         string book_id FK
         string contributor_id FK
+        string contributor_type
     }
     BOOK_GENRE_MAP {
         int id PK

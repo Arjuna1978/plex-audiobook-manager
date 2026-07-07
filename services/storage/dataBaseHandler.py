@@ -36,7 +36,8 @@ class dataBaseHandler:
 
             CREATE TABLE IF NOT EXISTS SERVER (
                 server_id TEXT PRIMARY KEY,
-                title TEXT,
+                plex_id TEXT,
+                name TEXT,
                 notes TEXT
             );
 
@@ -71,8 +72,7 @@ class dataBaseHandler:
             CREATE TABLE IF NOT EXISTS USERS (
                 user_id TEXT PRIMARY KEY,
                 name TEXT,
-                light_mode INTEGER DEFAULT 1,
-                servers TEXT,
+                light_mode INTEGER NOT NULL DEFAULT 1 CHECK (light_mode IN (0, 1)),
                 file_id TEXT,
                 FOREIGN KEY (file_id) REFERENCES FILES(file_id)
             );
@@ -83,12 +83,14 @@ class dataBaseHandler:
                 type TEXT,
                 server TEXT,
                 path TEXT,
+                plex_id TEXT,
                 file_id TEXT,
                 FOREIGN KEY (file_id) REFERENCES FILES(file_id)
             );
 
             CREATE TABLE IF NOT EXISTS CONTRIBUTORS (
                 contributor_id TEXT PRIMARY KEY,
+                plex_id TEXT,
                 asin_id TEXT,
                 asin_txt TEXT,
                 name TEXT,
@@ -107,19 +109,20 @@ class dataBaseHandler:
 
             CREATE TABLE IF NOT EXISTS BOOKS (
                 book_id TEXT PRIMARY KEY,
+                plex_id TEXT,
                 series_id TEXT,
                 cannon_id TEXT,
                 asin_id TEXT,
                 asin_txt TEXT,
                 isbn_id TEXT,
                 library_id TEXT,
-                title TEXT,
+                title TEXT NOT NULL DEFAULT DEFAULT "UNKNOWN",
                 duration TEXT,
-                summary TEXT,
-                in_library INTEGER,
-                has_read INTEGER,
-                have_listened INTEGER,
-                publish_year INTEGER,
+                description TEXT NOT NULL DEFAULT DEFAULT "UNKNOWN",
+                in_library INTEGER NOT NULL DEFAULT 0 CHECK (in_library IN (0, 1)),
+                has_started INTEGER NOT NULL DEFAULT 0 CHECK (has_started IN (0, 1)),
+                has_finished INTEGER NOT NULL DEFAULT 0 CHECK (has_started IN (0, 1)),
+                publish_year INTEGER NOT NULL DEFAULT 1000,
                 FOREIGN KEY (series_id) REFERENCES SERIES(series_id),
                 FOREIGN KEY (cannon_id) REFERENCES CANNON(cannon_id),
                 FOREIGN KEY (library_id) REFERENCES LIBRARIES(library_id)
@@ -127,6 +130,7 @@ class dataBaseHandler:
 
             CREATE TABLE IF NOT EXISTS CHAPTERS (
                 chapter_id INTEGER PRIMARY KEY,
+                plex_id TEXT,
                 book_id TEXT,
                 title TEXT,
                 chapter_index_txt TEXT,
