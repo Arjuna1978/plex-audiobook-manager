@@ -1,6 +1,6 @@
 erDiagram
     %% Relationships
-    USERS ||--o{ LIBRARIES: "has"
+    USERS ||--o{ LIBRARIES : "has"
     LIBRARIES ||--o{ BOOKS : "contains"
     CONTRIBUTORS ||--o{ BOOK_CONTRIBUTOR_MAP : "contributes_to"
     BOOKS ||--o{ CHAPTERS : "has"
@@ -15,7 +15,6 @@ erDiagram
     FILES ||--o{ CANNON_FILES_MAP : "associated_with"
     CONTRIBUTORS ||--o{ CONTRIBUTOR_FILES_MAP : "has"
     FILES ||--o{ CONTRIBUTOR_FILES_MAP : "associated_with"
-    
     BOOKS ||--o{ BOOK_GENRE_MAP : "assigned_to"
     GENRES ||--o{ BOOK_GENRE_MAP : "contains"
     BOOKS ||--o{ BOOK_TAG_MAP : "assigned_to"
@@ -24,7 +23,6 @@ erDiagram
     GENRES ||--o{ CONTRIBUTOR_GENRE_MAP : "contains"
     CONTRIBUTORS ||--o{ CONTRIBUTOR_TAG_MAP : "assigned_to"
     TAGS ||--o{ CONTRIBUTOR_TAG_MAP : "contains"
-    
     USERS ||--o{ USER_SERVER_MAP : "mapped_to"
     SERVER ||--o{ USER_SERVER_MAP : "mapped_to"
     LIBRARIES ||--o{ LIBRARY_SERVER_MAP : "mapped_to"
@@ -33,82 +31,81 @@ erDiagram
     %% Entities
     USERS {
         string user_id PK
-        string name "Name of user"
-        bool light_mode "light is default and true"
-        string prefered_server "last server selected"
-        string file_id FK "image for avatar"
+        string name
+        bool light_mode
+        string prefered_server
+        string file_id FK
     }
     SERVER {
         string server_id PK
-        string plex_id 
-        string name "human readable name"
-        string notes "any notes about this server"
+        string plex_id
+        string name
+        string notes
     }
     LIBRARIES {
         string library_id PK
-        string plex_id "called section id in plex"
-        string name "human readable name"
-        string type "plex types are | movie | show | artist (audio)|"
-        string path "allows for local link"
+        string plex_id
+        string name
+        string type
+        string path
         string file_id FK
     }
     CONTRIBUTORS {
         string contributor_id PK
-        string plex_id FK
-        string asin_id FK
-        string asin_txt "human readable name as per ASIN"
-        string name "human readable name"
-        string type "app specific types are | author | narator | producer|"
-        string description "long form dscription"
+        string plex_id
+        string asin_id
+        string asin_txt
+        string name
+        string type
+        string description
     }
     CANNON {
         string cannon_id PK
-        string title "human readable name"
-        string description "long form dscription"
+        string title
+        string description
     }
     SERIES {
         string series_id PK
         string cannon_id FK
         string title
-        string description "long form dscription"
+        string description
     }
     BOOKS {
         string book_id PK
         string series_id FK
         string cannon_id FK
-        string plex_id FK
-        string asin_id FK
+        string plex_id
+        string asin_id
         string asin_txt
-        string isbn_id FK
+        string isbn_id
         string library_id FK
-        string title "human readable name"
-        string duration "in ms"
-        string duration_played "in ms"
-        string description "long form dscription"
-        bool in_library "allows for book information not in library"
-        bool has_started "set to true if user has started listening"
-        bool has_finished "set to true if user has finished"
-        int publish_year "YYYY"
+        string title
+        string duration
+        string description
+        bool in_library
+        bool has_started
+        bool has_finished
+        int publish_year
     }
     CHAPTERS {
         int chapter_id PK
         string book_id FK
         string plex_id
-        string title "human readable name"
-        string chapter_index_txt "Allowing for chapter numbers that and not just enumerated"
-        int chapter_index_number 
-        int start_time_offset "in ms"
-        int end_time_offset "in ms"
-        int duration "in ms"
-        bool has_started "set to true if user has starte"
-        bool has_finished ""set to true if user has finished"
+        string title
+        string chapter_index_txt
+        int chapter_index_number
+        int start_time_offset
+        int end_time_offset
+        int duration
+        bool has_started
+        bool has_finished
     }
     GENRES {
         int genre_id PK
-        string genre_name "server defined human readable text"
-        string source_taxonomy "set to true if user has finished"
+        string genre_name
+        string source_taxonomy
         string source_id
-        string source_txt "taxonomy defined human readable text"
+        string source_txt
     }
     TAGS {
         int tag_id PK
@@ -124,8 +121,6 @@ erDiagram
         string container
         string notes
     }
-
-    %% Mapping Tables
     BOOK_FILES_MAP {
         int id PK
         string book_id FK

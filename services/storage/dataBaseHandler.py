@@ -22,6 +22,7 @@ class dataBaseHandler:
         This effectively incorporates your initialization script.
         """
         with self.get_connection() as conn:
+            conn.execute("PRAGMA foreign_keys = ON;")
             # Using executescript to run your complete schema definition
             conn.executescript('''
             -- ==========================================
@@ -116,12 +117,12 @@ class dataBaseHandler:
                 asin_txt TEXT,
                 isbn_id TEXT,
                 library_id TEXT,
-                title TEXT NOT NULL DEFAULT DEFAULT "UNKNOWN",
+                title TEXT NOT NULL DEFAULT "UNKNOWN",
                 duration TEXT,
-                description TEXT NOT NULL DEFAULT DEFAULT "UNKNOWN",
+                description TEXT NOT NULL DEFAULT "UNKNOWN",
                 in_library INTEGER NOT NULL DEFAULT 0 CHECK (in_library IN (0, 1)),
                 has_started INTEGER NOT NULL DEFAULT 0 CHECK (has_started IN (0, 1)),
-                has_finished INTEGER NOT NULL DEFAULT 0 CHECK (has_started IN (0, 1)),
+                has_finished INTEGER NOT NULL DEFAULT 0 CHECK (has_finished IN (0, 1)),
                 publish_year INTEGER NOT NULL DEFAULT 1000,
                 FOREIGN KEY (series_id) REFERENCES SERIES(series_id),
                 FOREIGN KEY (cannon_id) REFERENCES CANNON(cannon_id),
@@ -138,7 +139,8 @@ class dataBaseHandler:
                 start_time_offset INTEGER,
                 end_time_offset INTEGER,
                 duration INTEGER GENERATED ALWAYS AS (end_time_offset - start_time_offset),
-                have_listened INTEGER,
+                has_started INTEGER NOT NULL DEFAULT 0 CHECK (has_started IN (0, 1)),
+                has_finished INTEGER NOT NULL DEFAULT 0 CHECK (has_finished IN (0, 1)),
                 FOREIGN KEY (book_id) REFERENCES BOOKS(book_id)
             );
 
@@ -241,6 +243,13 @@ class dataBaseHandler:
                 FOREIGN KEY (contributor_id) REFERENCES CONTRIBUTORS(contributor_id),
                 FOREIGN KEY (tag_id) REFERENCES TAGS(tag_id)
             );
+            -- ==========================================
+            -- INDEXES FOR PERFORMANCE
+            -- ==========================================
+            CREATE INDEX IF NOT EXISTS idx_books_series ON BOOKS(series_id);
+            CREATE INDEX IF NOT EXISTS idx_chapters_book ON CHAPTERS(book_id);
+            CREATE INDEX IF NOT EXISTS idx_book_genres_book ON BOOK_GENRE_MAP(book_id);
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_books_plex ON BOOKS(plex_id);
             ''')
 # CRUD opperations
 
@@ -272,10 +281,9 @@ class dataBaseHandler:
             conn.row_factory = sqlite3.Row 
             return conn.execute(query, (value,)).fetchone()
 
-    def delete_recorf_by_field(self, table, field, value):
+    def delete_record_by_field(self, table: str, field, value):
         """
         Delete a record based on any column and value
-        
         Args:
         Table: The table to trget
         Column: The Column to search in
